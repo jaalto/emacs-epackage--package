@@ -1,0 +1,7 @@
+2012-01-05 Thu  Jari Aalto  <jari.aalto@cante.net>
+
+	* package.el (package-load-all-descriptors): Only for
+	PACKAGE-VERSION/ directories.
+	(package-activate): Check empty pkg-desc; posisble Emacs 24
+	package manager file.
+	(package--list-packages): Signal error under 24.
