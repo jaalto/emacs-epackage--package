@@ -340,7 +340,9 @@ Uses `package-directory-list' to find packages."
   (mapc (lambda (dir)
 	  (if (file-directory-p dir)
 	      (mapc (lambda (name)
-		      (package-load-descriptor dir name))
+		      ;; Ignore all other dirs but PACKAGE-VERSION/
+		      (if (string-match "-[0-9.]+$" name)
+			  (package-load-descriptor dir name)))
 		    (directory-files dir nil "^[^.]"))))
 	package-directory-list))
 
@@ -406,26 +408,28 @@ Recursively activates all dependencies of the named package."
   ;; if the package has actually been loaded, and not merely
   ;; activated.  However, don't try to activate 'emacs', as that makes
   ;; no sense.
-  (unless (eq package 'emacs)
-    (let* ((pkg-desc (assq package package-alist))
-	   (this-version (package-desc-vers (cdr pkg-desc)))
-	   (req-list (package-desc-reqs (cdr pkg-desc)))
-	   ;; If the package was never activated, we want to do it
-	   ;; now.
-	   (keep-going (or (not (memq package package-activated-list))
-			   (package-version-compare this-version version '>))))
-      (while (and req-list keep-going)
-	(or (package-activate (car (car req-list))
-			      (car (cdr (car req-list))))
-	    (setq keep-going nil))
-	(setq req-list (cdr req-list)))
-      (if keep-going
-	  (package-do-activate package (cdr pkg-desc))
-	;; We get here if a dependency failed to activate -- but we
-	;; can also get here if the requested package was already
-	;; activated.  Return non-nil in the latter case.
-	(and (memq package package-activated-list)
-	     (package-version-compare this-version version '>=))))))
+  (let ((pkg-desc (assq package package-alist)))
+    (when (and (not (eq package 'emacs))
+	       pkg-desc)
+      (let* ((this-version (package-desc-vers (cdr pkg-desc)))
+	     (req-list (package-desc-reqs (cdr pkg-desc)))
+	     ;; If the package was never activated, we want to do it
+	     ;; now.
+	     (keep-going (or (not (memq package package-activated-list))
+			     (package-version-compare
+			      this-version version '>))))
+	(while (and req-list keep-going)
+	  (or (package-activate (car (car req-list))
+				(car (cdr (car req-list))))
+	      (setq keep-going nil))
+	  (setq req-list (cdr req-list)))
+	(if keep-going
+	    (package-do-activate package (cdr pkg-desc))
+	  ;; We get here if a dependency failed to activate -- but we
+	  ;; can also get here if the requested package was already
+	  ;; activated.  Return non-nil in the latter case.
+	  (and (memq package package-activated-list)
+	       (package-version-compare this-version version '>=)))))))
 
 (defun package-mark-obsolete (package pkg-vec)
   "Put package on the obsolete list, if not already there."
@@ -1424,6 +1428,19 @@ Emacs."
 (defun package--list-packages ()
   "Display a list of packages.
 Helper function that does all the work for the user-facing functions."
+  (unless (string< emacs-version "24")
+    (error
+     (concat "This is old package.el, please uninstall. "
+	     "Use Emacs 24 package.el. Paths: "
+	     (mapconcat
+	      #'concat
+	      (let (list)
+		(dolist (path load-path)
+		  (setq path (format "%s/package.el" path))
+		  (if (file-exists-p path)
+		      (add-to-list 'list path)))
+		list)
+	      " "))))
   (with-current-buffer (package-list-packages-internal)
     (package-menu-mode)
     ;; Set up the header line.
