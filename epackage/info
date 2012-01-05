@@ -1,0 +1,42 @@
+Package: package
+Section: extensions
+License: GPL-2+
+Depends: emacs (>= 22)
+Status: core-emacs-24 stable
+Compat:
+Maintainer: Jari Aalto <jari.aalto@cante.net>
+Bugs:
+Upstream: Tom Tromey <tromey@redhat.com>
+Upstream-Bugs:
+Vcs-Type: http
+Vcs-Url: http://tromey.com/elpa/package.el
+Vcs-Browser:
+Homepage: http://tromey.com/elpa/index.html
+Wiki: http://www.emacswiki.org/emacs/ELPA
+Commentary:
+X-Development:
+ NOTE: The latest code in Emacs source tree
+ <http://bzr.savannah.gnu.org/lh/emacs/> supports
+ multiple package repositories. The code *does* not work in erlier
+ versions of Emacs (required tabular-list.el which depends on
+ new glyph features).
+Description: Emacs lisp package archive, old version (<Emacs 24 ELPA)
+  An interface to Emacs Lisp Package Archive (ELPA) at
+ <http://tromey.com/elpa>. A package is described by its name and
+ version. The distribution format is either a tar file or a single
+ *.el file.
+ .
+ A tar file should be named NAME-VERSION.tar. The tar file must
+ unpack into a directory named after the package and version:
+ NAME-VERSION. It must contain a file named PACKAGE-pkg.el which
+ consists of a call to define-package. It may also contain a "dir"
+ file and the info files it references.
+ .
+ A *.el file will be named NAME-VERSION.el in ELPA, but will be
+ installed as simply NAME.el in a directory named NAME-VERSION.
+ .
+ Start interface with M-x package-list-packages or
+ M-x package-list-packages-no-fetch
+ .
+ NOTE: Included in Emacs 24. This old version does not support
+ multiple package repositories.
