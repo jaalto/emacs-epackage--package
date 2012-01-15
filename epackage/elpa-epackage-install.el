@@ -20,4 +20,4 @@
 (autoload 'package-list-packages                "package" "" t)
 (autoload 'package-list-packages-no-fetch       "package" "" t)
 (autoload 'package-report-bug                   "package" "" t)
-(provide 'elpa-epkg-install)
+(provide 'elpa-epackage-install)

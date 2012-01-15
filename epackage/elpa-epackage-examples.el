@@ -1,5 +1,5 @@
 ;; Prevent loading this file. Study the examples.
-(error "elpa-epkg-examples.el is not a configuration file.")
+(error "elpa-epackage-examples.el is not a configuration file.")
 
 ;; For Emacs 24 version of package.el only. DOES NOT WORK
 ;; WITH OLD package.el
